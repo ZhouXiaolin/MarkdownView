@@ -80,6 +80,9 @@ final class MarkdownViewCoordinator {
         pendingIsStreaming = nil
     }
 
+    /// ProposedViewSize 与调用方 sizeThatFits 都是 iOS 16+；iOS 15 走
+    /// MarkdownTextView 的 intrinsicContentSize。
+    @available(iOS 16.0, *)
     func sizeThatFits(_ proposal: ProposedViewSize, for view: MarkdownTextView) -> CGSize? {
         // A zero-width proposal asks for the minimum width. Text can wrap to
         // any width, so answer with zero — reporting the current layout width

@@ -146,9 +146,29 @@ enum MarkdownContentLocale {
         if let cached = cjkLanguageByLocale[key] {
             return cached
         }
-        let language = normalizedLanguage(locale.language)
+        let language: String
+        if #available(iOS 16.0, macOS 13.0, *) {
+            language = normalizedLanguage(locale.language)
+        } else {
+            language = legacyLanguageIdentifier(locale.identifier)
+        }
         cjkLanguageByLocale[key] = language
         return language
+    }
+
+    /// iOS 15 没有 `Locale.Language`；从 identifier 字符串取同样的信息。
+    /// 只有 Han 文本会走到这里（ja/ko 提前返回），所以只需处理 zh 变体。
+    private static func legacyLanguageIdentifier(_ identifier: String) -> String {
+        let normalized = identifier.replacingOccurrences(of: "_", with: "-")
+        let isTraditional = normalized.contains("Hant")
+            || normalized.hasPrefix("zh-HK")
+            || normalized.hasPrefix("zh-MO")
+            || normalized.hasPrefix("zh-TW")
+        guard isTraditional else { return "zh-Hans" }
+        for region in ["HK", "MO"] where normalized.contains("-\(region)") {
+            return "zh-Hant-\(region)"
+        }
+        return "zh-Hant"
     }
 
     private static var cjkLanguageByLocale: [String: String] = [:]
@@ -171,6 +191,7 @@ enum MarkdownContentLocale {
     ///
     /// Any language that is not Chinese, Japanese or Korean falls back to
     /// Simplified Chinese, as it always has.
+    @available(iOS 16.0, macOS 13.0, *)
     static func normalizedLanguage(_ language: Locale.Language) -> String {
         switch language.languageCode {
         case .japanese?:

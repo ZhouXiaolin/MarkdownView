@@ -23,6 +23,9 @@ import SwiftUI
             updateMarkdownTextView(uiView, coordinator: context.coordinator)
         }
 
+        // iOS 16+ 的测量协议。iOS 15 上 SwiftUI 没有 sizeThatFits，走
+        // MarkdownTextView 的 intrinsicContentSize（内容重建时主动失效）。
+        @available(iOS 16.0, *)
         func sizeThatFits(
             _ proposal: ProposedViewSize,
             uiView: MarkdownTextView,
