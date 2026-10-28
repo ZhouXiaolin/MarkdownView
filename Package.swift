@@ -7,8 +7,8 @@ let package = Package(
     name: "MarkdownView",
     defaultLocalization: "en",
     platforms: [
-        .iOS(.v16),
-        .macCatalyst(.v16),
+        .iOS(.v15),
+        .macCatalyst(.v15),
         .macOS(.v13),
         .visionOS(.v1),
         .watchOS(.v8),
